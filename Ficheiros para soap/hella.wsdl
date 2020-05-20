@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions
+	targetNamespace="http://www.aglaia-gmbh.de/xml/BaSS_SOAPd/"
+	xmlns:tns="http://www.aglaia-gmbh.de/xml/BaSS_SOAPd/"
+	xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:wsdp="http://schemas.xmlsoap.org/ws/2006/02/devprof"
+	xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy"
+	xmlns:wse="http://schemas.xmlsoap.org/ws/2004/08/eventing"
+	xmlns:wsoap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+	xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wsssecurity-utility-1.0.0.xsd"
+  xmlns:xsd1="hella.xsd"
+	xmlns:p="http://www.w3.org/2001/XMLSchema">
+
+	<wsdl:import namespace="hella.xsd"
+				location="hella.xsd" />
+    
+    <wsdl:message name="NotificationRequest">
+        <wsdl:part name="NotificationMessage" element="xsd1:notification_message"></wsdl:part>
+    </wsdl:message>
+
+    <wsdl:message name="NotificationResponse">
+        <wsdl:part name="AnswerMessage" element="xsd1:answer_message"></wsdl:part>
+    </wsdl:message>
+
+    <wsdl:message name="ErrorRequest">
+        <wsdl:part name="ErrorMessage" element="xsd1:error_message"></wsdl:part>
+    </wsdl:message>
+
+    <wsdl:message name="ErrorResponse">
+        <wsdl:part name="TaskMessage" element="xsd1:task_message"></wsdl:part>
+    </wsdl:message>
+
+    <wsdl:portType name="SOAPdServiceInterface" wse:EventSource="true">
+        <wsdl:operation name="Notification">
+            <wsdl:input message="tns:NotificationRequest" wsa:Action="http://www.aglaia-gmbh.de/xml/BaSS_SOAPd/NotificationRequest"/>
+            <wsdl:output message="tns:NotificationResponse" wsa:Action="http://www.aglaia-gmbh.de/xml/BaSS_SOAPd/NotificationResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="Error">
+            <wsdl:input message="tns:ErrorRequest" wsa:Action="http://www.aglaia-gmbh.de/xml/BaSS_SOAPd/ErrorRequest"/>
+            <wsdl:output message="tns:ErrorResponse" wsa:Action="http://www.aglaia-gmbh.de/xml/BaSS_SOAPd/ErrorResponse"/>
+        </wsdl:operation>
+    </wsdl:portType>
+
+	<wsdl:binding name="SOAPdServiceSoap12Binding" type="tns:SOAPdServiceInterface">
+		<wsoap12:binding style="document"  transport="http://schemas.xmlsoap.org/soap/http" />
+        <wsdl:operation name="Notification">
+            <wsoap12:operation soapAction="http://www.aglaia-gmbh.de/xml/BaSS_SOAPd/NotificationRequest" />
+            <wsdl:input>
+                <wsoap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <wsoap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="Error">
+            <wsoap12:operation soapAction="http://www.aglaia-gmbh.de/xml/BaSS_SOAPd/ErrorRequest" />
+            <wsdl:input>
+                <wsoap12:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <wsoap12:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+	</wsdl:binding>
+
+	<wsdl:service name="SOAPdService">
+		<wsdl:port name="SOAPdPort" binding="tns:SOAPdServiceSoap12Binding">
+            <wsoap12:address location="http://192.168.200.3:80/SOAPdService/SOAPdService.asmx" />
+		</wsdl:port>
+	</wsdl:service>
+
+</wsdl:definitions>
