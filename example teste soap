@@ -1,0 +1,8 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:jav="http://javainuse.com">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <jav:inputSOATest>
+         <test>susana</test>
+      </jav:inputSOATest>
+   </soapenv:Body>
+</soapenv:Envelope>

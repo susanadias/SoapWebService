@@ -14,6 +14,7 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
+			
 			<xs:element name="outputSOATest">
 				<xs:complexType>
 					<xs:sequence>
@@ -21,6 +22,7 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
+			
 		</xs:schema>
 	</wsdl:types>
 
