@@ -5,25 +5,28 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
-import com.javainuse.InputSOATest;
-import com.javainuse.ObjectFactory;
-import com.javainuse.OutputSOATest;
+import com.javainuse.models.NotificationContainer;
 
 @Endpoint
 public class WebServiceEndpoint {
 
-	private static final String NAMESPACE_URI = "http://javainuse.com";
+	//e o nameUrl do schema
+	private static final String NAMESPACE_URI = "http://www.aglaia-gmbh.de/xml/2013/05/17/BaSS_SOAPd.xsd";
 
-	@PayloadRoot(namespace = NAMESPACE_URI, localPart = "inputSOATest")
+	@PayloadRoot(namespace = NAMESPACE_URI, localPart ="notification_message")
 	@ResponsePayload
-	public OutputSOATest hello(@RequestPayload InputSOATest request) {
+	public void hello(@RequestPayload NotificationContainer request) {
 
-		String outputString = "Hello " + request.getTest() + "!";
+		String outputString = "Hello ";
 
-		ObjectFactory factory = new ObjectFactory();
+		/*ObjectFactory factory = new ObjectFactory();
 		OutputSOATest response = factory.createOutputSOATest();
 		response.setResult(outputString);
 
-		return response;
+		return response;*/
 	}
+	
+	
+
+	
 }

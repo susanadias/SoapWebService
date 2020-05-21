@@ -31,15 +31,13 @@
 	<wsdl:message name="inputSOATest">
 		<wsdl:part name="in" element="tns:inputSOATest" />
 	</wsdl:message>
-	<wsdl:message name="outputSOATest">
-		<wsdl:part name="out" element="tns:outputSOATest" />
-	</wsdl:message>
+	
 
 <!--Define port definition -->
 	<wsdl:portType name="SOATestEndpoint">
 		<wsdl:operation name="SOATest">
 			<wsdl:input message="tns:inputSOATest" />
-			<wsdl:output message="tns:outputSOATest" />
+			<!--<wsdl:output message="tns:outputSOATest" />-->
 		</wsdl:operation>
 	</wsdl:portType>
 

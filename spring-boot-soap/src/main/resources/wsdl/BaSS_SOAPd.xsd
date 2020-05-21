@@ -1,0 +1,924 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://www.aglaia-gmbh.de/xml/2013/05/17/BaSS_SOAPd.xsd"
+            xmlns="http://www.aglaia-gmbh.de/xml/2013/05/17/BaSS_SOAPd.xsd"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:xmime="http://www.w3.org/2005/05/xmlmime"
+            elementFormDefault="qualified">
+
+    <!-- BasicTypes -->
+
+    <xsd:simpleType name="IP_Address">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(:([0-9]|[1-9][0-9]{1,4}))?"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <!-- BaSS_SOAPd/Common -->
+
+    <xsd:simpleType name="MAC_Address">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[0-9a-fA-F][0-9a-fA-F]:[0-9a-fA-F][0-9a-fA-F]:[0-9a-fA-F][0-9a-fA-F]:[0-9a-fA-F][0-9a-fA-F]:[0-9a-fA-F][0-9a-fA-F]:[0-9a-fA-F][0-9a-fA-F]"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="TaskType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="TASK_STARTUP"/>
+            <xsd:enumeration value="TASK_UPDATE"/>
+            <xsd:enumeration value="TASK_COUNT"/>
+            <xsd:enumeration value="TASK_FILL_LEVEL"/>
+            <xsd:enumeration value="TASK_DIGIT_INPUT"/>
+            <xsd:enumeration value="TASK_DIGIT_OUTPUT"/>
+            <xsd:enumeration value="TASK_SET_DATE_TIME"/>
+            <xsd:enumeration value="TASK_CURRENT_OBJECT_LIST"/>
+            <xsd:enumeration value="TASK_HISTORIC_OBJECT_LIST"/>
+            <xsd:enumeration value="TASK_ALIVE"/>
+            <xsd:enumeration value="TASK_CLEAR_ZONE"/>
+            <xsd:enumeration value="TASK_COUNT_CHANNELS"/>
+            <xsd:enumeration value="TASK_ZONE_CHANNELS"/>
+            <xsd:enumeration value="TASK_FEATURES_INFO"/>
+            <xsd:enumeration value="TASK_DELETE_ALL_TASKS"/>
+            <xsd:enumeration value="TASK_DELETE_ALL_NOTIFICATIONS"/>
+            <xsd:enumeration value="TASK_WIRELESS_TRACKING"/>
+            <xsd:enumeration value="TASK_IMAGE_SNAPSHOTS"/>
+            <xsd:enumeration value="TASK_ZONE_STATISTICS"/>
+            <xsd:enumeration value="TASK_ZONE_OBJECT_LIST"/>
+            <xsd:enumeration value="TASK_ALERT_INFO"/>
+            <xsd:enumeration value="TASK_SET_VIDEO_RECORDING"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="OSD_State">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="OSD_STATE_OK"/>
+            <xsd:enumeration value="OSD_STATE_ERROR_SENSOR_FAIL"/>
+            <xsd:enumeration value="OSD_STATE_WARNING_DARK"/>
+            <xsd:enumeration value="OSD_STATE_ERROR_DARK"/>
+            <xsd:enumeration value="OSD_STATE_WARNING_BRIGHT"/>
+            <xsd:enumeration value="OSD_STATE_ERROR_BRIGHT"/>
+            <xsd:enumeration value="OSD_STATE_NOT_AVAIL"/>
+            <xsd:enumeration value="OSD_STATE_INVALID"/>
+            <xsd:enumeration value="OSD_ERROR_COVERED"/>
+            <xsd:enumeration value="OSD_ERROR_TOO_DARK"/>
+            <xsd:enumeration value="OSD_ERROR_TOO_BRIGHT"/>
+            <xsd:enumeration value="OSD_ERROR"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="SOAP_ServerError">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="SOAP_SERVER_OK"/>
+            <xsd:enumeration value="SOAP_ERROR_UNKNOWN_RESPONSE"/>
+            <xsd:enumeration value="SOAP_ERROR_UNKNOWN_MESSAGE"/>
+            <xsd:enumeration value="SOAP_ERROR_UNKNOWN_DEVICE"/>
+            <xsd:enumeration value="SOAP_ERROR_SERVER_DOWN"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="SOAP_DeviceError">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="SOAP_DEVICE_OK"/>
+            <xsd:enumeration value="SOAP_ERROR_UNKNOWN_TASK"/>
+            <xsd:enumeration value="SOAP_ERROR_UNKNOWN_PARAM"/>
+            <xsd:enumeration value="SOAP_ERROR_OUT_OF_RESSOURCES"/>
+            <xsd:enumeration value="SOAP_ERROR_NO_LICENSE"/>
+            <xsd:enumeration value="SOAP_ERROR_TASK_EXECUTION"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="DigitalIOValue">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[01xX]{1}"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:complexType name="DigitalIOElement">
+        <xsd:attribute name="channel" type="xsd:unsignedInt" use="required"/>
+        <xsd:attribute name="value" type="DigitalIOValue" use="required"/>
+    </xsd:complexType>
+
+    <xsd:simpleType name="MeasuringChannelName">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[a-zA-Z0-9_\-]+"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="ObjectClassName">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[a-zA-Z]+"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="AlertType">               <!-- currently supported types: "Zone" and "DigitalInput" -->
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[a-zA-Z]+"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <!-- Events, Triggers -->
+    
+    <xsd:simpleType name="CountEventType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="COUNT_EVENT_ALWAYS"/>
+            <xsd:enumeration value="COUNT_EVENT_DELTA_IN"/>
+            <xsd:enumeration value="COUNT_EVENT_DELTA_OUT"/>
+            <xsd:enumeration value="COUNT_EVENT_DELTA_SUM_IN_OUT"/>
+            <xsd:enumeration value="COUNT_EVENT_DELTA_MAX_IN_OUT"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="CountEvent">
+        <xsd:attribute name="count_event_type" type="CountEventType" use="required"/>
+        <xsd:attribute name="delta" type="xsd:unsignedInt" default="1"/>
+    </xsd:complexType>
+    <xsd:complexType name="CountChannelsEvent"/>
+    <xsd:complexType name="ZoneChannelsEvent"/>
+    <xsd:simpleType name="FillEventType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="FILL_EVENT_ABOVE_THRESHOLD"/>
+            <xsd:enumeration value="FILL_EVENT_BELOW_THRESHOLD"/>
+            <xsd:enumeration value="FILL_EVENT_ANY"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="FillEvent">
+        <xsd:attribute name="fill_event_type" type="FillEventType" use="required"/>
+        <xsd:attribute name="threshold" type="xsd:unsignedInt" use="optional"/>
+    </xsd:complexType>
+    <xsd:simpleType name="ClearZoneEventType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="CLEAR_ZONE_EVENT_FREE"/>
+            <xsd:enumeration value="CLEAR_ZONE_EVENT_BLOCKED"/>
+            <xsd:enumeration value="CLEAR_ZONE_EVENT_ANY"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="ClearZoneEvent">
+        <xsd:attribute name="clear_zone_event_type" type="ClearZoneEventType" use="required"/>
+    </xsd:complexType>
+    <xsd:simpleType name="DigitalInputEventType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="DIGITAL_INPUT_EVENT_INACTIVE"/>
+            <xsd:enumeration value="DIGITAL_INPUT_EVENT_ACTIVE"/>
+            <xsd:enumeration value="DIGITAL_INPUT_EVENT_ANY"/>
+            <xsd:enumeration value="DIGITAL_INPUT_EVENT_IGNORE"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="DigitalInputEvent">
+        <xsd:sequence>
+            <xsd:element name="event" type="DigitalInputEventType" maxOccurs="16"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="OneTimeEvent"/>
+    <xsd:complexType name="CurrentObjectListEvent">
+        <xsd:attribute name="skip" type="xsd:unsignedInt" default="0"/>
+    </xsd:complexType>
+    <xsd:complexType name="OSD_Event"/>
+    <xsd:complexType name="FeatureChangedEvent"/>
+    <xsd:complexType name="WirelessTrackingEvent"/>
+    <xsd:complexType name="ZoneStatisticsEvent"/>
+    <xsd:complexType name="ZoneObjectListEvent"/>
+    <xsd:complexType name="AlertEvent">
+        <xsd:attribute name="type" type="AlertType" use="required"/>
+    </xsd:complexType>
+    <xsd:complexType name="EventTrigger">
+        <xsd:choice>
+            <xsd:element name="count_event"               type="CountEvent"/>
+            <xsd:element name="fill_event"                type="FillEvent"/>
+            <xsd:element name="digital_input_event"       type="DigitalInputEvent"/>
+            <xsd:element name="one_time_event"            type="OneTimeEvent"/>
+            <xsd:element name="osd_event"                 type="OSD_Event"/>
+            <xsd:element name="current_object_list_event" type="CurrentObjectListEvent"/>
+            <xsd:element name="clear_zone_event"          type="ClearZoneEvent"/>
+            <xsd:element name="count_channels_event"      type="CountChannelsEvent"/>
+            <xsd:element name="zone_channels_event"       type="ZoneChannelsEvent"/>
+            <xsd:element name="feature_changed_event"     type="FeatureChangedEvent"/>
+            <xsd:element name="wireless_tracking_event"   type="WirelessTrackingEvent"/>
+            <xsd:element name="zone_statistics_event"     type="ZoneStatisticsEvent"/>
+            <xsd:element name="zone_object_list_event"    type="ZoneObjectListEvent"/>
+            <xsd:element name="alert_event"               type="AlertEvent"/>
+        </xsd:choice>
+    </xsd:complexType>
+
+    <xsd:simpleType name="DateType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="DATE_DONT_CARE"/>
+            <xsd:enumeration value="DATE_DAY_OF_WEEK"/>
+            <xsd:enumeration value="DATE_DAY_OF_MONTH"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="DayOfWeek">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="MONDAY"/>
+            <xsd:enumeration value="TUESDAY"/>
+            <xsd:enumeration value="WEDNESDAY"/>
+            <xsd:enumeration value="THURSDAY"/>
+            <xsd:enumeration value="FRIDAY"/>
+            <xsd:enumeration value="SATURDAY"/>
+            <xsd:enumeration value="SUNDAY"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="DayOfMonth">
+        <xsd:restriction base="xsd:unsignedInt">
+            <xsd:maxInclusive value="31" fixed="true"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="HoursOfDay">
+        <xsd:restriction base="xsd:unsignedInt">
+            <xsd:maxInclusive value="23" fixed="true"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="MinutesOrSeconds">
+        <xsd:restriction base="xsd:unsignedInt">
+            <xsd:maxInclusive value="59" fixed="true"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="Date">
+        <xsd:attribute name="kind" type="DateType" use="required"/>
+        <xsd:attribute name="day_of_week" type="DayOfWeek" use="optional"/>
+        <xsd:attribute name="day_of_month" type="DayOfMonth" use="optional"/>
+    </xsd:complexType>
+    <xsd:complexType name="ClockTime">
+        <xsd:attribute name="hours" type="HoursOfDay" use="required"/>
+        <xsd:attribute name="minutes" type="MinutesOrSeconds" use="required"/>
+        <xsd:attribute name="seconds" type="MinutesOrSeconds" use="required"/>
+    </xsd:complexType>
+    <xsd:complexType name="TimeTrigger">
+        <xsd:sequence>
+            <xsd:element name="date" type="Date" minOccurs="0"/>
+            <xsd:element name="start" type="ClockTime"/>
+            <xsd:element name="cycle" type="xsd:duration" minOccurs="0"/>
+            <xsd:element name="random_offset" type="xsd:duration" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="Trigger">
+        <xsd:choice>
+            <xsd:element name="event_trigger" type="EventTrigger"/>
+            <xsd:element name="time_trigger" type="TimeTrigger"/>
+        </xsd:choice>
+    </xsd:complexType>
+
+    <xsd:complexType name="CountingGateID">
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+    </xsd:complexType>
+    
+    <xsd:complexType name="FillRegionID">
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="ClearZoneID">
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+    </xsd:complexType>
+    
+    <xsd:complexType name="BinaryData">
+        <xsd:sequence>
+            <xsd:element name="bin_data" type="xsd:base64Binary" xmime:expectedContentTypes="application/octet-stream"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- Notification Container -->
+    
+    <xsd:attributeGroup name="NotificationDeviceAttr">
+        <xsd:attribute name="mac_address" type="MAC_Address" use="required"/>
+        <xsd:attribute name="customer_ID" type="xsd:string"  use="required"/>
+    </xsd:attributeGroup>
+
+    <xsd:attributeGroup name="NotificationSpecificAttr">
+        <xsd:attribute name="task_type"       type="TaskType"        use="required"/>
+        <xsd:attribute name="notification_ID" type="xsd:unsignedInt" use="required"/>
+        <xsd:attribute name="serverTask_ID"   type="xsd:unsignedInt" use="required"/>
+        <xsd:attribute name="callerType_ID"   type="xsd:string"      use="required"/>
+        <xsd:attribute name="timestamp"       type="xsd:dateTime"    use="required"/>
+    </xsd:attributeGroup>
+    
+    <xsd:complexType name="NotificationBase" abstract="true">
+      <xsd:attributeGroup ref="NotificationDeviceAttr"/>
+      <xsd:attributeGroup ref="NotificationSpecificAttr"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="NotificationWithOSDState" abstract="true">
+      <xsd:complexContent>
+        <xsd:extension base="NotificationBase">
+          <xsd:attribute name="osd_state" type="OSD_State" use="required"/>
+          <xsd:attribute name="osd_error_detail" type="xsd:string" use="optional"/>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="ExtendedNotificationBase" abstract="true">
+      <xsd:complexContent>
+        <xsd:extension base="NotificationWithOSDState">
+          <xsd:attribute name="ip_address" type="IP_Address" use="required"/>
+          <xsd:attribute name="firmware_version" type="xsd:string" use="required"/>
+          <xsd:attribute name="customer_version" type="xsd:string" use="required"/>
+          <xsd:attribute name="version" type="xsd:decimal" fixed="1.0" use="optional"/>
+          <xsd:attribute name="model" type="xsd:string" use="optional"/>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="CountNotification">
+        <xsd:complexContent>
+            <xsd:extension base="NotificationWithOSDState">
+                <xsd:sequence>
+                    <xsd:element name="counting_gate_id" type="CountingGateID"/>
+                </xsd:sequence>
+                <xsd:attribute name="count_in" type="xsd:unsignedInt" use="required"/>
+                <xsd:attribute name="count_out" type="xsd:unsignedInt" use="required"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:attributeGroup name="CountResultAttr">
+        <xsd:attribute name="count_in" type="xsd:unsignedInt" use="required"/>
+        <xsd:attribute name="count_out" type="xsd:unsignedInt" use="required"/>
+    </xsd:attributeGroup>
+    
+    <xsd:complexType name="CountChannelData">
+        <xsd:attribute name="channel_name" type="MeasuringChannelName" />
+        <xsd:attribute name="objClass" type="ObjectClassName" use="optional"/>
+        <xsd:attributeGroup ref="CountResultAttr"/>
+    </xsd:complexType>
+    
+    <xsd:complexType name="CountChannelsNotification">
+        <xsd:complexContent>
+            <xsd:extension base="NotificationWithOSDState">
+                <xsd:sequence>
+                    <xsd:element name="count_channel" type="CountChannelData" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ZoneData">
+        <xsd:attribute name="zone_name" type="MeasuringChannelName" />
+        <xsd:attribute name="objClass" type="ObjectClassName" use="optional"/>
+        <xsd:attribute name="fill_level" type="xsd:unsignedInt" use="required"/>
+        <xsd:attribute name="maxDwell" type="xsd:unsignedInt" use="optional"/>
+        <xsd:attribute name="meanDwell" type="xsd:unsignedInt" use="optional"/>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ZoneChannelsNotification">
+        <xsd:complexContent>
+            <xsd:extension base="NotificationWithOSDState">
+                <xsd:sequence>
+                    <xsd:element name="zone_channel" type="ZoneData" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ZoneStatisticsData">
+        <xsd:attribute name="zone_name" type="MeasuringChannelName" use="required"/>
+        <xsd:attribute name="objClass" type="ObjectClassName" use="optional"/>
+        <xsd:attribute name="count" type="xsd:unsignedInt" use="required"/>
+        <xsd:attribute name="max_fill_level" type="xsd:unsignedInt" use="required"/>
+        <xsd:attribute name="maxDwell" type="xsd:unsignedInt" use="required"/>
+        <xsd:attribute name="meanDwell" type="xsd:unsignedInt" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="ZoneStatisticsNotification">
+        <xsd:complexContent>
+            <xsd:extension base="NotificationBase">
+                <xsd:sequence>
+                    <xsd:element name="zone_channel" type="ZoneStatisticsData" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="FillNotification">
+        <xsd:complexContent>
+            <xsd:extension base="NotificationWithOSDState">
+                <xsd:sequence>
+                    <xsd:element name="fill_region_id" type="FillRegionID"/>
+                </xsd:sequence>
+                <xsd:attribute name="fill_level" type="xsd:unsignedInt" use="required"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="DigitalInputNotification">
+        <xsd:complexContent>
+            <xsd:extension base="NotificationBase">
+                <xsd:sequence>
+                    <xsd:element name="digital_input_port" type="DigitalIOElement" maxOccurs="16"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="ClearZoneNotification">
+        <xsd:complexContent>
+            <xsd:extension base="NotificationWithOSDState">
+                <xsd:sequence>
+                    <xsd:element name="clear_zone_id" type="ClearZoneID"/>
+                </xsd:sequence>
+                <xsd:attribute name="is_blocked" type="xsd:boolean" use="required"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="AliveNotification">
+        <xsd:complexContent>
+            <xsd:extension base="ExtendedNotificationBase">
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:simpleType name="RebootType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="SOAP_REBOOT_POWERON"/>
+            <xsd:enumeration value="SOAP_REBOOT_WATCHDOG"/>
+            <xsd:enumeration value="SOAP_REBOOT_UPDATE"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="StartupNotification">
+        <xsd:complexContent>
+            <xsd:extension base="ExtendedNotificationBase">
+                <xsd:attribute name="reboot_type" type="RebootType" use="required"/>
+                <xsd:attribute name="xml_version" type="xsd:string" use="required"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="CountChannelFeatureInfo">
+        <xsd:attribute name="name" type="MeasuringChannelName" use="required"/>
+        <xsd:attribute name="objClass" type="ObjectClassName" use="optional"/>
+        <!-- to be extended -->
+    </xsd:complexType>
+
+    <xsd:complexType name="CountChannelsFeatureInfo">
+        <xsd:sequence>
+            <xsd:element name="count_channel" type="CountChannelFeatureInfo" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ZoneChannelFeatureInfo">
+        <xsd:attribute name="name" type="MeasuringChannelName" use="required"/>
+        <xsd:attribute name="objClass" type="ObjectClassName" use="optional"/>
+        <!-- to be extended -->
+    </xsd:complexType>
+
+    <xsd:complexType name="ZoneChannelsFeatureInfo">
+        <xsd:sequence>
+            <xsd:element name="zone_channel" type="ZoneChannelFeatureInfo" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="FeatureInfoNotification">
+        <xsd:complexContent>
+            <xsd:extension base="ExtendedNotificationBase">
+                <xsd:sequence>
+                    <xsd:element name="active_count_channels" type="CountChannelsFeatureInfo"/>
+                    <xsd:element name="active_zone_channels" type="ZoneChannelsFeatureInfo" minOccurs="0" maxOccurs="1"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <!-- Wireless Tracking Notification -->
+    
+    <xsd:simpleType name="WirelessType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="WIFI"/>
+            <xsd:enumeration value="BLUETOOTH"/>
+            <xsd:enumeration value="UNKNOWN"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="WirelessTrackingResult">
+        <xsd:attribute name="mac_address" type="xsd:string" use="required"/>
+        <xsd:attribute name="wireless_type" type="WirelessType" use="required"/>
+        <xsd:attribute name="signal_strength" type="xsd:int" use="required"/>
+    </xsd:complexType>    
+    
+    <xsd:complexType name="WirelessTrackingResults">
+        <xsd:sequence>
+            <xsd:element name="wireless_tracking_result" type="WirelessTrackingResult" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="timestamp" type="xsd:dateTime" use="required"/>
+    </xsd:complexType>
+    
+    <xsd:complexType name="WirelessTrackingNotification">
+        <xsd:complexContent>
+            <xsd:extension base="NotificationWithOSDState">
+                <xsd:sequence>
+                    <xsd:element name="wireless_tracking_results" type="WirelessTrackingResults"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <!-- ObjectList definitions -->
+
+    <xsd:simpleType name="ShortDuration">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[0-9]+\.[0-9]+"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="Coordinate_2D">
+        <xsd:attribute name="x" type="xsd:int" use="required"/>
+        <xsd:attribute name="y" type="xsd:int" use="required"/>
+    </xsd:complexType>
+    <xsd:complexType name="Coordinate_3D">
+        <xsd:complexContent>
+            <xsd:extension base="Coordinate_2D">
+                <xsd:attribute name="z" type="xsd:int" use="required"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="Object" abstract="true">
+        <xsd:sequence>
+            <xsd:element name="entry" type="Coordinate_3D"/>
+        </xsd:sequence>
+        <xsd:attribute name="id"       type="xsd:unsignedInt" use="required"/>
+        <xsd:attribute name="objClass" type="ObjectClassName" use="optional"/>
+        <xsd:attribute name="zone"     type="xsd:string" default="0"/>
+        <xsd:attribute name="dwell"    type="ShortDuration" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="CurrentObject">
+        <xsd:complexContent>
+            <xsd:extension base="Object">
+                <xsd:sequence>
+                    <xsd:element name="pos"   type="Coordinate_3D"/>
+                    <xsd:element name="mov"   type="Coordinate_2D"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="HistoricObject">
+        <xsd:complexContent>
+            <xsd:extension base="Object">
+                <xsd:sequence>
+                    <xsd:element name="exit"  type="Coordinate_3D"/>
+                </xsd:sequence>
+                <xsd:attribute name="exit_time" type="xsd:dateTime" use="required"/>
+                <xsd:attribute name="height" type="xsd:unsignedInt" use="required"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="CurrentObjectListNotification">
+        <xsd:complexContent>
+            <xsd:extension base="NotificationWithOSDState">
+                <xsd:choice>
+                    <xsd:element name="obj" type="CurrentObject" minOccurs="0" maxOccurs="unbounded"/>
+                    <xsd:element name="binary_data" type="BinaryData"/>
+                </xsd:choice>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <!-- Workaround for soap codegeneration, which is not able to extend with an additional attribute -->
+    <xsd:complexType name="HistoricObjectListNotificationBase">
+        <xsd:complexContent>
+            <xsd:extension base="NotificationBase">
+                <xsd:choice>
+                    <xsd:element name="obj" type="HistoricObject" minOccurs="0" maxOccurs="unbounded"/>
+                    <xsd:element name="binary_data" type="BinaryData"/>
+                </xsd:choice>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="HistoricObjectListNotification">
+        <xsd:complexContent>
+            <xsd:extension base="HistoricObjectListNotificationBase">
+                <xsd:attribute name="lost_count" type="xsd:unsignedInt" use="required"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <!-- Zone Object List Notification -->
+    <xsd:complexType name="ZoneObject">
+        <xsd:sequence>
+            <xsd:element name="entry" type="Coordinate_2D"/>
+            <xsd:element name="exit"  type="Coordinate_2D"/>
+        </xsd:sequence>
+        <xsd:attribute name="id"        type="xsd:unsignedInt"      use="required"/>
+        <xsd:attribute name="objClass"  type="ObjectClassName"      use="optional"/>
+        <xsd:attribute name="zone"      type="MeasuringChannelName" use="required"/>
+        <xsd:attribute name="dwell"     type="xsd:unsignedInt"      use="required"/>
+        <xsd:attribute name="exit_time" type="xsd:dateTime"         use="required"/>
+        <xsd:attribute name="height"    type="xsd:unsignedInt"      use="required"/>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ZoneObjectListNotification">
+        <xsd:complexContent>
+            <xsd:extension base="NotificationBase">
+                <xsd:sequence>
+                    <xsd:element name="obj" type="ZoneObject" minOccurs="0" maxOccurs="unbounded" />
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="ImageSnapshotsNotification">
+        <xsd:complexContent>
+            <xsd:extension base="NotificationBase">
+                <xsd:sequence>
+                    <xsd:element name="snapshots" type="BinaryData"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <!-- Application Level Alert Notification -->
+    <xsd:complexType name="AlertData">
+        <xsd:attribute name="source" type="xsd:string" use="required"/>            <!-- name of the source that alert is configured for (could be name of zone, digital input name, ...) -->
+        <xsd:attribute name="state" type="xsd:boolean" use="required"/>         <!-- state of alert: false -> alert not active, true -> alert active  -->
+    </xsd:complexType>
+
+    <xsd:complexType name="AlertInfoNotification">
+        <xsd:complexContent>
+            <xsd:extension base="NotificationBase">
+                <xsd:sequence>
+                    <xsd:element name="alert" type="AlertData"  minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+                <xsd:attribute name="type" type="AlertType" use="required"/>                
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="NotificationContainer">
+        <xsd:choice>
+            <xsd:element name="count_notification"               type="CountNotification"/>
+            <xsd:element name="fill_notification"                type="FillNotification"/>
+            <xsd:element name="digital_input_notification"       type="DigitalInputNotification"/>
+            <xsd:element name="alive_notification"               type="AliveNotification"/>
+            <xsd:element name="curr_objlist_notification"        type="CurrentObjectListNotification"/>
+            <xsd:element name="hist_objlist_notification"        type="HistoricObjectListNotification"/>
+            <xsd:element name="startup_notification"             type="StartupNotification"/>
+            <xsd:element name="clear_zone_notification"          type="ClearZoneNotification"/>
+            <xsd:element name="count_channels_notification"      type="CountChannelsNotification"/>
+            <xsd:element name="zone_channels_notification"       type="ZoneChannelsNotification"/>
+            <xsd:element name="features_info_notification"       type="FeatureInfoNotification"/>
+            <xsd:element name="wireless_tracking_notification"   type="WirelessTrackingNotification"/>
+            <xsd:element name="image_snapshots_notification"     type="ImageSnapshotsNotification"/>
+            <xsd:element name="zone_statistics_notification"     type="ZoneStatisticsNotification"/>
+            <xsd:element name="zone_object_list_notification"    type="ZoneObjectListNotification"/>
+            <xsd:element name="alert_info_notification"          type="AlertInfoNotification"/>
+        </xsd:choice>
+    </xsd:complexType>
+    
+    <!-- Task Container -->
+    
+    <xsd:complexType name="Task" abstract="true">
+        <xsd:attribute name="task_type" type="TaskType" use="required"/>
+        <xsd:attribute name="serverTask_ID" type="xsd:unsignedInt" use="required"/>
+    </xsd:complexType>
+    <xsd:simpleType name="UpdateType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="UPDATE_FIRMWARE"/>
+            <xsd:enumeration value="UPDATE_CUSTOMER_SOFTWARE"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="TransferType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="TRANSFER_INLINE"/>
+            <xsd:enumeration value="TRANSFER_BINARY"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="TaskRequestUpdate">
+        <xsd:complexContent>
+            <xsd:extension base="Task">
+                <xsd:attribute name="update_type" type="UpdateType" use="required"/>
+                <xsd:attribute name="packet_url" type="xsd:string" use="required"/>
+                <xsd:attribute name="validity" type="xsd:unsignedInt" use="required"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="TaskWithActivity" abstract="true">
+        <xsd:complexContent>
+            <xsd:extension base="Task">
+                <xsd:attribute name="activity_state" type="xsd:boolean" use="required"/>
+                <xsd:attribute name="store_task"     type="xsd:boolean" use="optional"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="TaskSetDigitalOutput">
+        <xsd:complexContent>
+            <xsd:extension base="Task">
+                <xsd:sequence>
+                    <xsd:element name="digital_output_port" type="DigitalIOElement" maxOccurs="16"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="TaskSetDateTime">
+        <xsd:complexContent>
+            <xsd:extension base="Task">
+                <xsd:attribute name="time_to_set" type="xsd:dateTime" use="required"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="TaskSubscribeTriggered" abstract="true">
+        <xsd:complexContent>
+            <xsd:extension base="TaskWithActivity">
+                <xsd:sequence>
+                    <xsd:element name="trigger" type="Trigger"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="TaskSubscribeTriggeredSafe" abstract="true">
+        <xsd:complexContent>
+            <xsd:extension base="TaskSubscribeTriggered">
+                <xsd:attribute name="store_on_transmission_error" type="xsd:boolean" default="false"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="TaskSubscribeCounting">
+        <xsd:complexContent>
+            <xsd:extension base="TaskSubscribeTriggeredSafe">
+                <xsd:sequence>
+                    <xsd:element name="counting_gate_id" type="CountingGateID"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="TaskSubscribeCountChannels">
+        <xsd:complexContent>
+            <xsd:extension base="TaskSubscribeTriggeredSafe"/>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="TaskSubscribeZoneChannels">
+        <xsd:complexContent>
+            <xsd:extension base="TaskSubscribeTriggeredSafe"/>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="TaskSubscribeZoneStatistics">
+        <xsd:complexContent>
+            <xsd:extension base="TaskSubscribeTriggeredSafe"/>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="TaskSubscribeFill">
+        <xsd:complexContent>
+            <xsd:extension base="TaskSubscribeTriggeredSafe">
+                <xsd:sequence>
+                    <xsd:element name="fill_region_id" type="FillRegionID"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="TaskSubscribeClearZone">
+        <xsd:complexContent>
+            <xsd:extension base="TaskSubscribeTriggeredSafe">
+                <xsd:sequence>
+                    <xsd:element name="clear_zone_id" type="ClearZoneID"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="TaskSubscribeDigitalInput">
+        <xsd:complexContent>
+            <xsd:extension base="TaskSubscribeTriggeredSafe"/>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="TaskSubscribeAlive">
+        <xsd:complexContent>
+            <xsd:extension base="TaskSubscribeTriggered"/>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="TaskSubscribeObjectList">
+        <xsd:complexContent>
+            <xsd:extension base="TaskSubscribeTriggered">
+                <xsd:attribute name="transfer_type" type="TransferType" use="required"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="TaskSubscribeFeaturesInfo">
+        <xsd:complexContent>
+            <xsd:extension base="TaskSubscribeTriggered"/>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="TaskDeleteAllTasks">
+        <xsd:complexContent>
+            <xsd:extension base="Task"/>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="TaskDeleteAllNotifications">
+        <xsd:complexContent>
+            <xsd:extension base="Task"/>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="TaskSubscribeWirelessTracking">
+        <xsd:complexContent>
+            <xsd:extension base="TaskSubscribeTriggered"/>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="TaskSubscribeImageSnapshots">
+        <xsd:complexContent>
+            <xsd:extension base="TaskSubscribeTriggered"/>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="TaskSubscribeAlertInfo">
+        <xsd:complexContent>
+            <xsd:extension base="TaskSubscribeTriggeredSafe">
+                <xsd:attribute name="type" type="AlertType" use="required"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="TaskSubscribeZoneObjectList">
+        <xsd:complexContent>
+            <xsd:extension base="TaskSubscribeTriggered"/>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:simpleType name="RepetitionCycle">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="REPEAT_NONE"/>
+            <xsd:enumeration value="REPEAT_DAILY"/>
+            <xsd:enumeration value="REPEAT_WEEKLY"/>
+            <xsd:enumeration value="REPEAT_MONTHLY"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="TaskSetVideoRecording">
+        <xsd:complexContent>
+            <xsd:extension base="Task">
+                <xsd:attribute name="recording_start" type="xsd:dateTime" use="required"/>
+                <xsd:attribute name="recording_duration" type="xsd:duration" use="required"/>
+                <xsd:attribute name="recording_repetition" type="RepetitionCycle" use="required"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="TaskContainer">
+        <xsd:choice maxOccurs="unbounded" minOccurs="0">
+            <xsd:element name="task_request_update"                 type="TaskRequestUpdate"/>
+            <xsd:element name="task_set_digital_output"             type="TaskSetDigitalOutput"/>
+            <xsd:element name="task_set_date_time"                  type="TaskSetDateTime"/>
+            <xsd:element name="task_subscribe_counting"             type="TaskSubscribeCounting"/>
+            <xsd:element name="task_subscribe_fill"                 type="TaskSubscribeFill"/>
+            <xsd:element name="task_subscribe_digital_input"        type="TaskSubscribeDigitalInput"/>
+            <xsd:element name="task_subscribe_alive"                type="TaskSubscribeAlive"/>
+            <xsd:element name="task_subscribe_objlist"              type="TaskSubscribeObjectList"/>
+            <xsd:element name="task_subscribe_clear_zone"           type="TaskSubscribeClearZone"/>
+            <xsd:element name="task_subscribe_count_channels"       type="TaskSubscribeCountChannels"/>
+            <xsd:element name="task_subscribe_zone_channels"        type="TaskSubscribeZoneChannels"/>
+            <xsd:element name="task_subscribe_features_info"        type="TaskSubscribeFeaturesInfo"/>
+            <xsd:element name="task_delete_all_tasks"               type="TaskDeleteAllTasks"/>
+            <xsd:element name="task_delete_all_notifications"       type="TaskDeleteAllNotifications"/>
+            <xsd:element name="task_subscribe_wireless_tracking"    type="TaskSubscribeWirelessTracking"/>
+            <xsd:element name="task_subscribe_image_snapshots"      type="TaskSubscribeImageSnapshots"/>
+            <xsd:element name="task_subscribe_zone_statistics"      type="TaskSubscribeZoneStatistics"/>
+            <xsd:element name="task_subscribe_zone_object_list"     type="TaskSubscribeZoneObjectList"/>
+            <xsd:element name="task_subscribe_alert_info"           type="TaskSubscribeAlertInfo"/>
+            <xsd:element name="task_set_video_recording"            type="TaskSetVideoRecording"/>
+        </xsd:choice>
+    </xsd:complexType>
+
+    <!-- Answer Container -->
+    
+    <xsd:complexType name="AnswerContainer">
+        <xsd:complexContent>
+            <xsd:extension base="TaskContainer">
+                <xsd:attribute name="referenced_notification_ID" type="xsd:unsignedInt" use="required"/>
+                <xsd:attribute name="server_response_type" type="SOAP_ServerError" use="required"/>
+                <xsd:attribute name="version" type="xsd:decimal" fixed="1.0" use="optional"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <!-- Error Container -->
+
+    <xsd:complexType name="ErrorContainer">
+        <xsd:complexContent>
+            <xsd:extension base="ExtendedNotificationBase">
+                <xsd:attribute name="error_reason" type="SOAP_DeviceError" use="required"/>
+                <xsd:attribute name="error_text"   type="xsd:string" use="optional"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="notification_message" type="NotificationContainer"/>
+    <xsd:element name="task_message" type="TaskContainer"/>
+    <xsd:element name="answer_message" type="AnswerContainer"/>
+    <xsd:element name="error_message" type="ErrorContainer"/>
+    
+
+</xsd:schema>
